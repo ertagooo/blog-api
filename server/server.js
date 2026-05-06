@@ -15,16 +15,23 @@ const app = express();
 connectDB();
 
 /* =========================
-   CORS CONFIG (FIXED)
+   CORS CONFIG (FIXED PROPERLY)
 ========================= */
 const corsOptions = {
-  origin: "*", // you can replace with your Vercel URL later
+  origin: [
+    "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
+    "http://localhost:5173"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 };
 
+// IMPORTANT: must be FIRST middleware
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // handles preflight requests
+
+// IMPORTANT: handle preflight BEFORE routes
+app.options("*", cors(corsOptions));
 
 /* =========================
    MIDDLEWARE
