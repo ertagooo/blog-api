@@ -9,29 +9,49 @@ const postRoutes = require("./routes/postRoutes");
 
 const app = express();
 
+/* =========================
+   DB CONNECTION
+========================= */
 connectDB();
 
 /* =========================
-   CLEAN CORS FIX
+   CORS (SAFE VERSION)
 ========================= */
-const corsOptions = {
+app.use(cors({
   origin: /\.vercel\.app$/,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
-};
+}));
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
+/* =========================
+   MIDDLEWARE
+========================= */
 app.use(express.json());
 
+/* =========================
+   ROUTES
+========================= */
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
+/* =========================
+   TEST ROUTE
+========================= */
 app.get("/", (req, res) => {
   res.send("API is running");
 });
 
+/* =========================
+   ERROR HANDLER (IMPORTANT)
+========================= */
+app.use((err, req, res, next) => {
+  console.error("SERVER ERROR:", err);
+  res.status(500).json({ message: "Server error" });
+});
+
+/* =========================
+   START SERVER
+========================= */
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
