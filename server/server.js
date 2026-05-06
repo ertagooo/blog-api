@@ -10,12 +10,14 @@ const postRoutes = require("./routes/postRoutes");
 const app = express();
 
 /* =========================
-   DB CONNECTION
+   DB CONNECTION (SAFE)
 ========================= */
-connectDB();
+connectDB().catch(err => {
+  console.error("DB CONNECTION FAILED:", err);
+});
 
 /* =========================
-   CORS (SAFE VERSION)
+   CORS (SAFE FOR VERCEL)
 ========================= */
 app.use(cors({
   origin: /\.vercel\.app$/,
@@ -23,9 +25,6 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-/* =========================
-   MIDDLEWARE
-========================= */
 app.use(express.json());
 
 /* =========================
@@ -35,14 +34,14 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
 /* =========================
-   TEST ROUTE
+   HEALTH CHECK
 ========================= */
 app.get("/", (req, res) => {
   res.send("API is running");
 });
 
 /* =========================
-   ERROR HANDLER (IMPORTANT)
+   ERROR HANDLER
 ========================= */
 app.use((err, req, res, next) => {
   console.error("SERVER ERROR:", err);
