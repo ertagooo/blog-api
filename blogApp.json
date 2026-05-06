@@ -1,5 +1,5 @@
 {
-  "url": "https://blog-api-v1vd.onrender.com/api",
+  "url": "https://blog-api-csz5.onrender.com/api",
   "endpoints": {
     "register": "/users/register",
     "login": "/users/login",
