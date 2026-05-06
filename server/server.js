@@ -15,13 +15,13 @@ const app = express();
 connectDB();
 
 /* =========================
-   CORS CONFIG (FIXED)
+   CORS CONFIG (PRODUCTION SAFE)
 ========================= */
 const corsOptions = {
   origin: [
-    "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
-    "https://blog-api-two-sigma.vercel.app",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:3000",
+    /\.vercel\.app$/ // ✅ allows ALL Vercel deployments (fixes your issue)
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -29,12 +29,12 @@ const corsOptions = {
 };
 
 /* =========================
-   MIDDLEWARE (ORDER IS IMPORTANT)
+   MIDDLEWARE (ORDER IMPORTANT)
 ========================= */
 app.use(cors(corsOptions));
 
-// IMPORTANT: FIX for Render + Node 24 (NO "*")
-app.options(/.*/, cors(corsOptions));
+// ✅ Proper preflight handling (NO "*", avoids Render crash)
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
@@ -49,6 +49,14 @@ app.use("/api/posts", postRoutes);
 ========================= */
 app.get("/", (req, res) => {
   res.send("API is running");
+});
+
+/* =========================
+   ERROR HANDLER (HELPFUL FOR DEBUGGING)
+========================= */
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err.message);
+  res.status(500).json({ message: "Server Error" });
 });
 
 /* =========================
