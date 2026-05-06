@@ -15,27 +15,35 @@ const app = express();
 connectDB();
 
 /* =========================
-   CORS CONFIG (FIXED PROPERLY)
+   CORS CONFIG (FINAL FIX)
 ========================= */
+const allowedOrigins = [
+  "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
+  "https://blog-api-two-sigma.vercel.app",
+  "http://localhost:5173"
+];
+
 const corsOptions = {
-  origin: [
-    "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
-    "http://localhost:5173"
-  ],
+  origin: function (origin, callback) {
+    // allow Postman / server-to-server requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(null, false);
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 };
 
-// IMPORTANT: must be FIRST middleware
-app.use(cors(corsOptions));
-
-// IMPORTANT: handle preflight BEFORE routes
-app.options("*", cors(corsOptions));
-
 /* =========================
    MIDDLEWARE
 ========================= */
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // preflight fix
 app.use(express.json());
 
 /* =========================
