@@ -1,0 +1,8 @@
+{
+  "url": "https://your-vercel-app.vercel.app",
+  "endpoints": {
+    "register": "/api/users/register",
+    "login": "/api/users/login",
+    "posts": "/api/posts"
+  }
+}
