@@ -5,9 +5,13 @@
     <button @click="$router.push('/create')">Create Post</button>
     <button @click="logout">Logout</button>
 
-    <div v-for="post in posts" :key="post._id">
+    <div v-for="post in posts" :key="post._id" class="post">
       <h3 @click="goTo(post._id)">{{ post.title }}</h3>
-      <p>by {{ post.author?.username }}</p>
+
+      <!-- ✅ FIX: show content -->
+      <p>{{ post.content }}</p>
+
+      <small>by {{ post.author?.username }}</small>
     </div>
   </div>
 </template>
@@ -20,15 +24,29 @@ import { useRouter } from "vue-router";
 const posts = ref([]);
 const router = useRouter();
 
+/* =========================
+   FETCH ALL POSTS
+========================= */
 const fetchPosts = async () => {
-  const res = await API.get("/posts");
-  posts.value = res.data;
+  try {
+    const res = await API.get("/posts");
+    posts.value = res.data;
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load posts");
+  }
 };
 
+/* =========================
+   GO TO SINGLE POST
+========================= */
 const goTo = (id) => {
   router.push(`/post/${id}`);
 };
 
+/* =========================
+   LOGOUT
+========================= */
 const logout = () => {
   localStorage.removeItem("token");
   router.push("/login");
