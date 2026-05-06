@@ -15,35 +15,27 @@ const app = express();
 connectDB();
 
 /* =========================
-   CORS CONFIG (FINAL FIX)
+   CORS CONFIG (FIXED)
 ========================= */
-const allowedOrigins = [
-  "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
-  "https://blog-api-two-sigma.vercel.app",
-  "http://localhost:5173"
-];
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    // allow Postman / server-to-server requests
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(null, false);
-    }
-  },
+  origin: [
+    "https://blog-in8pqmq20-ertagooos-projects.vercel.app",
+    "https://blog-api-two-sigma.vercel.app",
+    "http://localhost:5173"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 };
 
 /* =========================
-   MIDDLEWARE
+   MIDDLEWARE (ORDER IS IMPORTANT)
 ========================= */
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // preflight fix
+
+// IMPORTANT: FIX for Render + Node 24 (NO "*")
+app.options(/.*/, cors(corsOptions));
+
 app.use(express.json());
 
 /* =========================
